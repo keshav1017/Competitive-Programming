@@ -1,0 +1,38 @@
+class SegmentTree {
+private:
+    vector<int> segTree;
+    int n;
+
+public:
+    SegmentTree(vector<int>& arr) {
+        n = arr.size();
+        segTree.resize(2 * n);
+
+        for (int i = 0; i < n; i++)
+            segTree[i + n] = arr[i]; 
+        
+        for (int i = n - 1; i > 0; i--)
+            segTree[i] = max(segTree[i * 2], segTree[i * 2 + 1]);
+    }
+
+    void pointUpdate(int index, int value) {
+        index += n; 
+        segTree[index] = value;
+        
+        for (index /= 2; index > 0; index /= 2)
+            segTree[index] = max(segTree[index * 2], segTree[index * 2 + 1]);
+    }
+
+    int rangeMaxQuery(int L, int R) {
+        L += n; R += n; 
+        int maxVal = INT_MIN;
+        
+        while (L <= R) {
+            if (L % 2 == 1) maxVal = max(maxVal, segTree[L++]); 
+            if (R % 2 == 0) maxVal = max(maxVal, segTree[R--]); 
+            L /= 2; R /= 2;
+        }
+        
+        return maxVal;
+    }
+};

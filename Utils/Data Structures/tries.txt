@@ -1,0 +1,15 @@
+int Trie[1000005][26];
+bool isEnd[1000005];
+int trieNode = 0;
+ 
+void insertWord(string& word){
+ 
+    int curr = 0;
+    for(char& ch: word){
+        if(Trie[curr][ch-'a'] == 0){
+            Trie[curr][ch-'a'] = ++trieNode;
+        }
+        curr = Trie[curr][ch-'a'];
+    }
+    isEnd[curr] = true;
+}

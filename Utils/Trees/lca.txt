@@ -1,0 +1,61 @@
+int const N = 0;
+v(int) adj[N+1];
+int up[N+1][20];
+int level[N+1];
+int values[N+1];
+
+void binary_lifting(int src, int par, int curr){
+    level[src] = curr;
+    up[src][0] = par;
+
+    fl(i, 1, 20){
+        if(up[src][i-1] != -1){
+            up[src][i] = up[up[src][i-1]][i-1];
+        }
+        else{
+            up[src][i] = -1;
+        }
+    }
+
+    for(int child: adj[src]){
+        if(child != par){
+            binary_lifting(child, src, curr+1);
+        }
+    }
+}
+
+int lift_up(int node, int k){
+    rfl(i, 19, 0){
+        if(node == -1 || k == 0){
+            break;
+        }
+
+        if(k >= (1ll << i)){
+            k -= (1ll << i);
+            node = up[node][i];
+        }
+    }
+
+    return node;
+}
+
+int lca(int u, int v){
+    if(level[u] < level[v]){
+        swap(u, v);
+    }
+
+    u = lift_up(u, level[u]-level[v]);
+
+    if(u == v){
+        return u;
+    }
+
+    rfl(i, 19, 0){
+        if(up[u][i] != up[v][i]){
+            u = up[u][i];
+            v = up[v][i];
+        }
+    }
+
+    return lift_up(u, 1);
+}

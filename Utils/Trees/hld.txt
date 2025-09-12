@@ -1,0 +1,57 @@
+int dfs(int curr, int par){
+    sz[curr] = 1;
+    p[curr] = par;
+
+    for(int child : adj[curr]){
+        if(child == par) continue;
+        dep[child] = dep[curr] + 1;
+        sz[curr] += dfs(child, curr);
+    }
+
+    return sz[curr];
+}
+
+int ct = 1;
+
+void hld(int curr, int par, int top){
+    id[curr] = ct++;
+    tp[curr] = top;
+
+    st.pointUpdate(id[curr], val[curr]);
+
+    int heavyChild = -1, heavySize = -1;
+    for(int child: adj[curr]){
+        if(child == par) continue;
+
+        if(sz[child] > heavySize){
+            heavyChild = child;
+            heavySize = sz[child];
+        }
+    }
+
+    if(heavyChild == -1) return;
+
+    hld(heavyChild, curr, top);
+
+    for(int child: adj[curr]){
+        if(child == par || child == heavyChild) continue;
+
+        hld(child, curr, child);
+    }
+}
+
+int query(int x, int y){
+    int ans = 0;
+
+    while(tp[x] != tp[y]){
+        if(dep[tp[x]] < dep[tp[y]]) swap(x, y);
+
+        ans = max(ans, st.rangeMaxQuery(id[tp[x]], id[x]));
+        x = p[tp[x]];
+    }
+
+    if(dep[x] > dep[y]) swap(x, y);
+    ans = max(ans, st.rangeMaxQuery(id[x], id[y]));
+
+    return ans;
+}
